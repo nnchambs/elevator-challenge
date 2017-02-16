@@ -113,7 +113,6 @@ export default class Elevator {
       }
       this.stop()
       this.deleteRequest()
-
     } else if (this.isAbove(dropOffFloor)) {
       for (let i = this.currentFloor; i > dropOffFloor; i--) {
         this.moveDown()

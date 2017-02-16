@@ -51,7 +51,6 @@ describe('Elevator', function() {
     elevator.currentFloor = 0;
     elevator.requestFloor(alex);
     elevator.fetchRider()
-    console.log(elevator.requests[0])
     assert.equal(elevator.floorTotal, 3)
     assert.equal(elevator.currentFloor, 3)
   });
