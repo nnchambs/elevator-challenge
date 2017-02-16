@@ -30,13 +30,13 @@ describe('Elevator', function() {
 
   it('should be able to add a request to its requests array', function() {
     elevator.addRequest(alex);
-    assert.equal(elevator.requests[0].currentFloor, 3);
+    assert.equal(elevator.requests[0].request.currentFloor, 3);
   });
 
   it('a person should be able to request a floor', function() {
     elevator.requestFloor(alex);
-    assert.equal(elevator.requests[0].currentFloor, 3);
-    assert.equal(elevator.requests[0].requestedFloor, 5);
+    assert.equal(elevator.requests[0].request.currentFloor, 3);
+    assert.equal(elevator.requests[0].request.requestedFloor, 5);
     assert.equal(elevator.requests.length, 1);
   });
 
@@ -51,6 +51,7 @@ describe('Elevator', function() {
     elevator.currentFloor = 0;
     elevator.requestFloor(alex);
     elevator.fetchRider()
+    console.log(elevator.requests[0])
     assert.equal(elevator.floorTotal, 3)
     assert.equal(elevator.currentFloor, 3)
   });
@@ -72,6 +73,8 @@ describe('Elevator', function() {
     elevator.dropOffRider();
     assert.equal(elevator.floorTotal, 5)
     assert.equal(elevator.currentFloor, 5)
+    assert.equal(elevator.requests.length, 0)
+    assert.equal(elevator.state, 'stopped')
   });
 
   it('should be able to fetch and dropoff meeka once a request is made', function() {
@@ -82,6 +85,9 @@ describe('Elevator', function() {
     elevator.dropOffRider();
     assert.equal(elevator.floorTotal, 10)
     assert.equal(elevator.currentFloor, 2)
+    assert.equal(elevator.requests.length, 0)
+    assert.equal(elevator.riders.length, 0)
+    assert.equal(elevator.state, 'stopped')
   });
 
   it('should be able to fetch meeka and alex and drop them off on their respective floors', function() {
@@ -89,11 +95,14 @@ describe('Elevator', function() {
     elevator.requestFloor(meeka);
     elevator.requestFloor(alex);
     elevator.fetchRider();
+    assert.equal(elevator.riders.length, 1)
     elevator.dropOffRider();
-    console.log(elevator.requests)
+    assert.equal(elevator.state, 'stopped')
     elevator.fetchRider();
+    assert.equal(elevator.riders.length, 1)
     elevator.dropOffRider();
-    assert.equal(elevator.floorTotal, 9)
+    assert.equal(elevator.floorTotal, 13)
+    assert.equal(elevator.stops, 4)
   });
 
 
@@ -112,9 +121,6 @@ describe('Elevator', function() {
     assert.equal(elevator.stops, 2)
     // Assert the total number of floors traversed
     assert.equal(elevator.floors, 5)
-  });
-
-  xit('should bring a rider to a floor below their current floor', () => {
   });
 
   afterEach(function() {

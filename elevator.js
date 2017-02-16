@@ -6,22 +6,23 @@ export default class Elevator {
     this.floorTotal = 0;
     this.state = 'idle';
     this.stops = 0;
-  };
+  }
 
   moveUp() {
     this.countFloorTotal()
     this.setStatus('moving')
-    return this.currentFloor++;
-  };
+    return this.currentFloor++
+  }
 
   moveDown() {
-    this.countFloorTotal();
+    this.countFloorTotal()
     this.setStatus('moving')
-    return this.currentFloor--;
-  };
+    return this.currentFloor--
+  }
 
   stop() {
     this.setStatus('stopped')
+    this.stopsCounter()
   }
 
   setStatus(string) {
@@ -40,12 +41,12 @@ export default class Elevator {
   }
 
   addRequest(person) {
-    return this.requests.push(person.request)
-  };
+    return this.requests.push(person)
+  }
 
   countFloorTotal() {
     return this.floorTotal++
-  };
+  }
 
   stopsCounter() {
     this.stops++
@@ -53,61 +54,76 @@ export default class Elevator {
 
   requestFloor(person) {
     this.addRequest(person);
-  };
+  }
 
   deleteRequest() {
     this.requests.shift()
     this.riders.shift()
   }
 
-  fetchRider() {
-    let pickUpFloor = this.requests[0].currentFloor;
-    if (pickUpFloor > this.currentFloor) {
+  arrivedAtRequestedFloor(requestedFloor) {
+    if(this.currentFloor === requestedFloor) return true
+  }
+
+  isBelow(requestedFloor) {
+    if (this.currentFloor < requestedFloor) return true
+  }
+
+  isAbove(requestedFloor) {
+    if (this.currentFloor > requestedFloor) return true
+  }
+
+  checkFloor(requestedFloor) {
+    if (this.arrivedAtRequestedFloor) {
+      this.stop()
+      this.addRider()
+    } else if (this.isAbove(requestedFloor)) {
       for (let i = this.currentFloor; i < pickUpFloor; i++) {
         this.moveUp();
       }
-    } else if (pickUpFloor < this.currentFloor) {
-        for (let i = this.currentFloor; i > pickUpFloor; i--) {
-          this.moveDown();
-        }
-    } else if (pickUpFloor === this.currentFloor) {
-      this.addRider()
-      this.stopsCounter()
     }
-  };
+  }
+
+  fetchRider() {
+    let pickUpFloor = this.requests[0].request.currentFloor;
+    let riderName = this.requests[0].name
+    if (this.isBelow(pickUpFloor)) {
+      for (let i = this.currentFloor; i < pickUpFloor; i++) {
+        this.moveUp()
+      }
+      this.stop()
+      this.addRider(riderName)
+    } else if (this.isAbove(pickUpFloor)) {
+        for (let i = this.currentFloor; i > pickUpFloor; i--) {
+          this.moveDown()
+        }
+        this.stop()
+        this.addRider(riderName)
+    } else {
+      this.stop()
+      this.addRider(riderName)
+    }
+  }
 
   dropOffRider() {
-    let dropOffFloor = this.requests[0].requestedFloor;
-    if (dropOffFloor > this.currentFloor) {
+    let dropOffFloor = this.requests[0].request.requestedFloor;
+    if (this.isBelow(dropOffFloor)) {
       for (let i = this.currentFloor; i < dropOffFloor; i++) {
-        this.moveUp();
-        this.state = 'moving'
+        this.moveUp()
       }
-    } else if (dropOffFloor < this.currentFloor) {
-        for (let i = this.currentFloor; i > dropOffFloor; i--) {
-          this.moveDown();
-          this.state = 'moving'
-        }
-    } else if (dropOffFloor === this.currentFloor) {
-      this.stopsCounter()
+      this.stop()
       this.deleteRequest()
-      this.state = 'stopped'
+
+    } else if (this.isAbove(dropOffFloor)) {
+      for (let i = this.currentFloor; i > dropOffFloor; i--) {
+        this.moveDown()
+      }
+      this.stop()
+      this.deleteRequest()
+    } else {
+      this.stop()
     }
-  };
-
-  // switchStatus() {
-  //   switch () {
-  //
-  //   }
-  //
-  // }
-
-
-
-//pickUpFloor and dropOffFloor
-//stop and move
-//switch statement for
-
+  }
 
   reset() {
     this.constructor()
