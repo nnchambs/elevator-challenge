@@ -1,4 +1,9 @@
 export default class Person {
-  constructor() {
+  constructor(name, currentFloor, requestedFloor) {
+    this.name = name;
+    this.request = {
+      currentFloor: currentFloor,
+      requestedFloor: requestedFloor
+    };
   }
 }
